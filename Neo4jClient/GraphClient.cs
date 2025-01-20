@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Neo4j.Driver;
 using Neo4jClient.ApiModels;
@@ -379,7 +380,7 @@ namespace Neo4jClient
                 }).ConfigureAwait(false);
         }
 
-        async Task<IEnumerable<TResult>> IRawGraphClient.ExecuteGetCypherResultsAsync<TResult>(CypherQuery query)
+        async Task<IEnumerable<TResult>> IRawGraphClient.ExecuteGetCypherResultsAsync<TResult>(CypherQuery query, CancellationToken cancellationToken)
         {
             var context = ExecutionContext.Begin(this);
             List<TResult> results;
@@ -425,7 +426,7 @@ namespace Neo4jClient
             return results;
         }
 
-        async Task IRawGraphClient.ExecuteCypherAsync(CypherQuery query)
+        async Task IRawGraphClient.ExecuteCypherAsync(CypherQuery query, CancellationToken cancellationToken)
         {
             var context = ExecutionContext.Begin(this);
 

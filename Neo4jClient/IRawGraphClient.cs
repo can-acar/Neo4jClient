@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading;
 using System.Threading.Tasks;
 using Neo4jClient.Cypher;
 
@@ -12,8 +13,10 @@ namespace Neo4jClient
     /// </summary>
     public interface IRawGraphClient : IGraphClient
     {
-        Task<IEnumerable<TResult>> ExecuteGetCypherResultsAsync<TResult>(CypherQuery query);
-        Task ExecuteCypherAsync(CypherQuery query);
+  
+  
         bool InTransaction { get; }
+        Task<IEnumerable<TResult>> ExecuteGetCypherResultsAsync<TResult>(CypherQuery query, CancellationToken cancellationToken = default);
+        Task ExecuteCypherAsync(CypherQuery query, CancellationToken cancellationToken = default);
     }
 }

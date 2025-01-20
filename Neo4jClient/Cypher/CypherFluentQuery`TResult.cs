@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Neo4jClient.Cypher
@@ -12,6 +13,13 @@ namespace Neo4jClient.Cypher
         public CypherFluentQuery(IGraphClient client, QueryWriter writer, bool isWrite = true, bool includeQueryStats = false)
             : base(client, writer, isWrite, includeQueryStats)
         {}
+
+        public async Task<IEnumerable<TResult>> QueryResultAsync(CancellationToken cancellationToken = default)
+        {
+            var results = await ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            return results;
+        }
+       
 
         public new ICypherFluentQuery<TResult> Unwind(string collectionName, string columnName)
         {
@@ -57,5 +65,28 @@ namespace Neo4jClient.Cypher
         }
 
         public Task<IEnumerable<TResult>> ResultsAsync => Client.ExecuteGetCypherResultsAsync<TResult>(Query);
+
+        private CypherQuery BuildQuery()
+        {
+            // Get the query text and parameters from the QueryWriter
+            var queryText = Client.Cypher.Query.QueryText;
+            var queryParams = Client.Cypher.Query.QueryParameters;
+
+            // Create a new CypherQuery with the accumulated information
+            return new CypherQuery(
+                queryText,
+                queryParams,
+                QueryWriter.ResultMode,
+                QueryWriter.ResultFormat,
+                QueryWriter.DatabaseName);
+
+        }
+        protected virtual async Task<IEnumerable<TResult>> ExecuteAsync(CancellationToken cancellationToken)
+        {
+            var query = BuildQuery();
+            var results = await ((IRawGraphClient)Client).ExecuteGetCypherResultsAsync<TResult>(query, cancellationToken);
+            return results;
+        }
+       
     }
 }
