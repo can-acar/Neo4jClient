@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0</TargetFrameworks>
         <Company></Company>
         <Copyright>2022 Readify, Tatham Oddie, Charlotte Skardon</Copyright>
         <Authors>Readify, Tatham Oddie, Charlotte Skardon</Authors>
@@ -10,6 +9,8 @@
         <Description>A .NET client for neo4j: an open source, transactional graph database. It's pretty awesome.</Description>
         <PackageTags>neo4j, nosql, cypher, bolt, graph</PackageTags>
         <Version>4.0.4</Version>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -23,7 +24,6 @@
       <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
       <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
       <PackageReference Include="Neo4j.Driver.Signed" Version="5.27.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
       <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     </ItemGroup>
@@ -43,6 +43,10 @@
         <Pack>True</Pack>
         <PackagePath></PackagePath>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Text.Json" Version="8.0.5" />
     </ItemGroup>
 
 

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Neo4j.Driver;
 using Neo4jClient.ApiModels;
@@ -331,7 +332,7 @@ namespace Neo4jClient
         #region Implementation of IRawGraphClient
 
         /// <inheritdoc />
-        async Task<IEnumerable<TResult>> IRawGraphClient.ExecuteGetCypherResultsAsync<TResult>(CypherQuery query)
+        async Task<IEnumerable<TResult>> IRawGraphClient.ExecuteGetCypherResultsAsync<TResult>(CypherQuery query,CancellationToken cancellationToken)
         {
             if (Driver == null)
                 throw new InvalidOperationException("Can't execute cypher unless you have connected to the server.");
@@ -357,7 +358,7 @@ namespace Neo4jClient
                 {
                     context.Database = Transaction.Database;
                     var result = await transactionManager.EnqueueCypherRequest($"The query was: {query.QueryText}", this, query).ConfigureAwait(false);
-                    results = ParseResults<TResult>(await result.StatementResult.ToListAsync().ConfigureAwait(false), query);
+                    results = ParseResults<TResult>(await result.StatementResult.ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false), query);
                     if (query.IncludeQueryStats)
                     {
                         var summary = await result.StatementResult.ConsumeAsync().ConfigureAwait(false);
@@ -440,7 +441,7 @@ namespace Neo4jClient
 
 
         /// <inheritdoc />
-        async Task IRawGraphClient.ExecuteCypherAsync(CypherQuery query)
+        async Task IRawGraphClient.ExecuteCypherAsync(CypherQuery query,CancellationToken cancellationToken)
         {
             var executionContext = ExecutionContext.Begin(this);
 
@@ -465,9 +466,9 @@ namespace Neo4jClient
                 var session = Driver.AsyncSession(ServerVersion, query.Database, query.IsWrite, query.Bookmarks);
                 IResultCursor cursor;
                 if (query.IsWrite)
-                    cursor = await session.WriteTransactionAsync(s => s.RunAsync(query, this)).ConfigureAwait(false);
+                    cursor = await session.ExecuteWriteAsync(s => s.RunAsync(query, this)).ConfigureAwait(false);
                 else
-                    cursor = await session.ReadTransactionAsync(s => s.RunAsync(query, this)).ConfigureAwait(false);
+                    cursor = await session.ExecuteReadAsync(s => s.RunAsync(query, this)).ConfigureAwait(false);
 
                 if (query.IncludeQueryStats)
                 {
@@ -529,6 +530,16 @@ namespace Neo4jClient
 
         /// <inheritdoc />
         public bool InTransaction => transactionManager != null && transactionManager.InTransaction;
+
+        public Task<IEnumerable<TResult>> ExecuteGetCypherResultsAsync<TResult>(CypherQuery query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ExecuteCypherAsync(CypherQuery query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <inheritdoc />
         public void EndTransaction()

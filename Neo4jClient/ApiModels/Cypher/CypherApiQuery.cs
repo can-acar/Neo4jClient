@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Neo4jClient.Cypher;
-using Newtonsoft.Json;
 
 namespace Neo4jClient.ApiModels.Cypher
 {
@@ -12,10 +12,10 @@ namespace Neo4jClient.ApiModels.Cypher
             Parameters = query.QueryParameters ?? new Dictionary<string, object>();
         }
 
-        [JsonProperty("query")]
+        [JsonPropertyName("query")]
         public string Query { get; }
 
-        [JsonProperty("params")]
+        [JsonPropertyName("params")]
         public IDictionary<string, object> Parameters { get; }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Neo4jClient.Cypher;
-using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 
 namespace Neo4jClient.ApiModels.Cypher
 {
