@@ -34,6 +34,8 @@ You will need to use the correct URI for the server version you are connecting t
  * 3.x or 4.x server: `neo4j://localhost:7687`
  * Worth reviewing the [Neo4j Documentation](https://neo4j.com/docs/driver-manual/current/client-applications/#driver-configuration-examples) to see what you need to use.
 
+### CancellationToken added!
+
  ### Async
 
  As this release is 100% `async` you will need to update any calls to `Results` or `ExecuteWithoutResults` to their `Async` equivalents.
